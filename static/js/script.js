@@ -53,6 +53,9 @@ $(document).ready(function() {
 
 
 
+    setTimeout(() => {
+        $('#messages').fadeOut('slow')
+    }, 5000)
 
     
 }); 
