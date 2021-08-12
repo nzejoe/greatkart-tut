@@ -4,6 +4,8 @@ from django.shortcuts import get_object_or_404, render
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
 
+from django.contrib.auth.decorators import login_required
+
 # from different app
 from carts.models import CartItem
 from carts.views import _cart_id
@@ -11,7 +13,7 @@ from carts.views import _cart_id
 from .models import Product
 from  category.models import Category
 
-
+@login_required()
 def store(request, category_slug=None):
 
     categories      = None

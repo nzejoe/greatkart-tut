@@ -6,14 +6,20 @@ from django.http import HttpResponse
 # VERIFICATION EMAIL
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.urls import conf
 from django.utils.http import  urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import EmailMessage, message
+from django.core.mail import EmailMessage
 
 from .forms import RegistrationForm
 from .models import Account
+
+
+# import from cart
+from carts.models import Cart, CartItem
+from carts.views import _cart_id
+
+import requests
 
 # Create your views here.
 def register(request):
@@ -70,11 +76,63 @@ def login(request):
         email = request.POST['email']
         password = request.POST['password']
 
+        strg = 'hello-world'
+        # print('params:-----> ' + strg.split())
         user = auth.authenticate(email=email, password=password)
         if user is not None:
+
+            # transfer cart to logged in user
+            try:
+                cart = Cart.objects.get(cart_id=_cart_id(request))
+                cart_item_exists = CartItem.objects.filter(cart=cart).exists()
+                if cart_item_exists:
+                    cart_items = CartItem.objects.filter(cart=cart)
+
+                    # get product variations
+                    product_variations = []
+                    for item in cart_items:
+                        variations = item.variation.all()
+                        product_variations.append(list(variations))
+
+                    # get cart items by user to access product variations
+                    cart_items = CartItem.objects.filter(user=user)
+                    ex_variation_list = []
+                    id = []
+                    for item in cart_items:
+                        existing_variation = item.variation.all()
+                        ex_variation_list.append(list(existing_variation))
+                        id.append(item.id) 
+                    
+                    for product_v in product_variations:
+                        if product_v in ex_variation_list:
+                            index = ex_variation_list.index(product_v)
+                            item_id = id[index]
+                            item = CartItem.objects.get(id=item_id)
+                            item.user = user
+                            item.quantity += 1
+                            item.save()
+                        else:
+                            cart_items = CartItem.objects.filter(cart=cart)
+                            for item in cart_items:
+                                item.user = user
+                                item.save()
+            except:
+                pass
+
             auth.login(request,user)
             messages.success(request, 'You are now logged in')
-            return redirect('dashboard')
+            url = request.META.get('HTTP_REFERER')
+
+            try:
+                query = requests.utils.urlparse(url).query
+                print('Query:-----> '+query)
+                print('---------------')
+                
+               
+                if 'next' in query:
+                    return redirect('checkout')
+            except:
+                return redirect('dashboard')
         else:
             messages.error(request,'Email or Password is incorrect')
             return redirect('login')

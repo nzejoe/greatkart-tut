@@ -154,3 +154,6 @@ EMAIL_HOST_USER = 'codegenesis.baseone@gmail.com'
 EMAIL_HOST_PASSWORD = 'godknows@gmail'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL =EMAIL_HOST_USER
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'login'
