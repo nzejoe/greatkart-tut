@@ -13,7 +13,8 @@
 <div class="card">
     <div class="card-body">
         <h4 class="card-title mb-4">Billing Address</h4>
-        <form action="">
+        <form action="{% url 'place_order' %}" method='post'>
+            {% csrf_token %}
             <div class="form-row">
                 <div class="col form-group">
                     <label for="">First Name</label>
@@ -73,48 +74,48 @@
 <div class="card">
 <div class="card-body">
 <table class="table table-borderless table-shopping-cart">
-<thead class="text-muted">
-	<tr class="small text-uppercase">
-	<th scope="col">Product</th>
-	<th scope="col" width="120">Quantity</th>
-	<th scope="col" width="120">Price</th>
-	</tr>
-	</thead>
-	<tbody>
+    <thead class="text-muted">
+        <tr class="small text-uppercase">
+        <th scope="col">Product</th>
+        <th scope="col" width="120">Quantity</th>
+        <th scope="col" width="120">Price</th>
+        </tr>
+    </thead>
+    <tbody>
     {% for cart_item in cart_items %}
-	<tr>
-		<td>
-			<figure class="itemside align-items-center">
-				<div class="aside"><img src="{{ cart_item.product.images.url }}" class="img-sm"></div>
-				<figcaption class="info">
-					<a href="{{ cart_item.product.get_url }}" class="title text-dark">{{ cart_item.product.product_name }}</a>
+        <tr>
+            <td>
+                <figure class="itemside align-items-center">
+                    <div class="aside"><img src="{{ cart_item.product.images.url }}" class="img-sm"></div>
+                    <figcaption class="info">
+                        <a href="{{ cart_item.product.get_url }}" class="title text-dark">{{ cart_item.product.product_name }}</a>
 
-					{% comment %} cat_item variatons {% endcomment %}
-					<p class="text-muted small">
-						{% if cart_item.variation.all %}
-							{% for item in cart_item.variation.all %}
-								{{ item.variation_category | capfirst }} : {{ item.variation_value | capfirst}} <br>
-							{% endfor %}
-						{% endif %}
-					</p>
+                        {% comment %} cat_item variatons {% endcomment %}
+                        <p class="text-muted small">
+                            {% if cart_item.variation.all %}
+                                {% for item in cart_item.variation.all %}
+                                    {{ item.variation_category | capfirst }} : {{ item.variation_value | capfirst}} <br>
+                                {% endfor %}
+                            {% endif %}
+                        </p>
 
-				</figcaption>
-			</figure>
-		</td>
-		<td> 
-			<!-- col.// -->
-            <label for="">{{ cart_item.quantity }}</label>
-            <!-- col.// -->
-		</td>
-		<td> 
-			<div class="price-wrap"> 
-				<var class="price">${{ cart_item.sub_total }}</var> 
-				<small class="text-muted"> ${{ cart_item.product.price }} each </small> 
-			</div> <!-- price-wrap .// -->
-		</td>
-	</tr>
-{% endfor %}
-</tbody>
+                    </figcaption>
+                </figure>
+            </td>
+            <td> 
+                <!-- col.// -->
+                <label for="">{{ cart_item.quantity }}</label>
+                <!-- col.// -->
+            </td>
+            <td> 
+                <div class="price-wrap"> 
+                    <var class="price">${{ cart_item.sub_total }}</var> 
+                    <small class="text-muted"> ${{ cart_item.product.price }} each </small> 
+                </div> <!-- price-wrap .// -->
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
 </table>
 			<button type="submit" class="btn btn-primary btn-block"> Place order </button>
 			<a href="{% url 'store' %}" class="btn btn-light btn-block">Continue Shopping</a>

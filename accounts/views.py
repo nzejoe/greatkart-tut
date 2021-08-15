@@ -76,7 +76,6 @@ def login(request):
         email = request.POST['email']
         password = request.POST['password']
 
-        strg = 'hello-world'
         # print('params:-----> ' + strg.split())
         user = auth.authenticate(email=email, password=password)
         if user is not None:
