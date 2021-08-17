@@ -65,6 +65,9 @@ class Account(AbstractBaseUser):
 
     objects = MyAccountManager()
 
+    def full_name(self):
+        return f'{str(self.first_name).capitalize()} {str(self.last_name).capitalize()}'
+
     def __str__(self):
         return self.email
 
